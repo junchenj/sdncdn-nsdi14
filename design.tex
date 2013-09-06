@@ -1,0 +1,31 @@
+\section{Design}
+
+\subsection{Components}
+Overview of whole system and functionalities of each component. 
+
+\subsection{Interfaces}
+Introduce forwarding table (between data plane and control plane), hint (within control plane between controller and nodes), NIB (between discovery modules and control plane)
+
+\subsection{Flexible Data plane}
+Our data plane can be based on existing proxy servers (e.g., Apache server) used by production networks. What flexibility we need from data plane.
+\begin{itemize}
+	\item Understand and execute based on the forwarding table.
+	\item Provide information for in-band passive measurement.
+\end{itemize}
+
+\subsection{Discovery}
+Discovery consists of local process running on each node to output local NIB, and global process that combines the local NIBs to output a global NIB.
+
+\begin{itemize}
+	\item how to compute global NIB from local NIBs
+	\item when to inform global control process of a change in global NIB to prevent frequent recalculating (when it is converged?) \jc{need some idea...}
+\end{itemize}
+
+\subsection{Control plane}
+The control plane design has three parts: global control process, local control process, and merging algorithm.
+
+Global control process: globally coordinated resource share. output global hint based on application-level goals. Coarse time granular.
+
+Local control process: detect connection failure/congestion from local NIB and output local hint.
+
+Merging algorithm: merge global hint from multiple controllers and local hint. need to meet requirements: (i) correctness, and (ii) prefer local hint when local hint strongly suggests current forwarding table is hopeless.

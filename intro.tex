@@ -1,0 +1,12 @@
+\section{Introduction}
+
+\begin{itemize}
+	\item CDNs are expected to carry more traffic. 
+	\item Today's CDN architecture is highly distributed. With expended capacity it is also needed to have a globally coordinated control plane. The CDN performance will benefit from such control plane in three aspects: coordinated resource allocation and recovery from failure and simplified optimization for application goals. 
+	\item Meanwhile, it has two fundamental challenges resulting from its overlay nature.
+	\begin{itemize}
+		\item Long propagation delay
+		\item Multiple controller consistency
+	\end{itemize}
+	\item We present SDCDN that addresses the challenges by leveraging a unique opportunity of overlay networks -- flexibility of individual node. Instead of implementing a fully centralized control plane or pushing all control functionalities to centralized controllers, our control plane resides in both controller, called global control process, and distributed nodes called local control process. The two control processes run in different time scales.
+\end{itemize}
