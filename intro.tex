@@ -1,12 +1,148 @@
 \section{Introduction}
 
+\begin{comment}
 \begin{itemize}
 	\item CDNs are expected to carry more traffic. 
-	\item Today's CDN architecture is highly distributed. With expended capacity it is also needed to have a globally coordinated control plane. The CDN performance will benefit from such control plane in three aspects: coordinated resource allocation and recovery from failure and simplified optimization for application goals. 
-	\item Meanwhile, it has two fundamental challenges resulting from its overlay nature.
+\item Today's CDN architecture is highly distributed. With
+expended capacity it is also needed to have a globally
+coordinated control plane. The CDN performance will benefit
+fromsuch control plane in three aspects: coordinated resource
+allocation and recovery from failure and simplified
+optimizationfor application goals.
+\item Meanwhile, it has two fundamental challenges resulting
+from its overlay nature.
 	\begin{itemize}
 		\item Long propagation delay
 		\item Multiple controller consistency
 	\end{itemize}
-	\item We present SDCDN that addresses the challenges by leveraging a unique opportunity of overlay networks -- flexibility of individual node. Instead of implementing a fully centralized control plane or pushing all control functionalities to centralized controllers, our control plane resides in both controller, called global control process, and distributed nodes called local control process. The two control processes run in different time scales.
+\item We present SDCDN that addresses the challenges by
+leveraging a unique opportunity of overlay networks --
+flexibility of individual node. Instead of implementing a fully
+centralized control plane or pushing all control
+functionalitiesto centralized controllers, our control plane
+resides in both
+controller, called global control process, and distributed
+nodescalled local control process. The two control processes runin
+different time scales.
 \end{itemize}
+\end{comment}
+
+
+Content delivery on the Internet is expected to grow by X\%
+every year for the next Y years~\cite{XX}.
+A significant part of Internet's content delivery relies on
+content delivery networks (CDNs).
+Therefore, as the traffic demand increases, CDNs are expanding
+their presence and growing in scale.
+For example, Akamai's infrastructure spans across 1,000
+networksand consists of more than 61,000 servers~\cite{akamai}.
+Although, the Internet content delivery has been largely
+successful, it is nowhere near its competitors (i.e., TV
+broadcast)
+in terms of the capacity, particularly for live streaming. For
+example, the record number of simultaneous streams
+during the U.S. presidential inauguration in 2009 was about 7
+million.
+However, one of the biggest television events, Super Bowl,
+attracts more than 100 million viewers~\cite{XX}.
+
+While the CDN infrastructure will continue to expand to
+meet such demand, today's CDNs are unable to fully leverage the capacity of the infrastructure because of two architectural culprits. One culprit is the lack of coordination among contents. Requests of different contents are satisfied independently, so the bandwidth allocation is unaware of the priority among these requests. As a result, it is complex, if not impossible, to optimize for application-level goals (e.g., prioritizing video streams) that require cross-content coordination. For example, in live video, to optimize for quality, a multicast tree is often preconfigured and remains rather static. The second culprit is the distributed model of request forwarding due to the lack of a network-wide coordination. 
+For example, a client-facing edge server independently
+makes a decision on which internal server to forward the
+request to when the content is not locally
+cached~\cite{akamai-live,coral,codeen}.
+As a result, such decisions can be suboptimal because the system
+does not have a network-wide view. 
+%With a network-wide view, thesystem can perform a joint optimization taking into account global constraints.
+
+To overcome these shortcomings, a controller is needed to perform joint optimizations that take into account global constraints of resources and demand. Moreover, such controller will simplify management and enable more innovations in operation and management of content delivery. For example, the system can adjust internal load by dynamically changing the supported set of bitrates while prioritizing important streams or regions that serve more customers. 
+
+%In particular, such control plane can generate
+%a network-wide view by collecting real-time knowledge from
+%distributed data-plane nodes (through a \textit{discovery
+%channel}), execute various coordinated optimization (in a
+%\textit{controller}) and finally modify the data-plane behavior
+%accordingly (through a \textit{dissemination protocol}). \jc{this sentence is redundant?}
+
+%Meanwhile, innovations in control and management of the content delivery infrastructure is required to enable scalable and efficient content delivery. 
+
+%This paper addresses the challenges in enabling significant innovations in the CDN's control plane.
+%In particular, we focus on the building a control plane that
+%manages the internal CDN nodes.
+
+
+%Our goal is to build a control plane for CDN that can generate a network-wide view by collecting real-time knowledge from distributed data-plane nodes (through a \textit{discovery channel}), execute various coordinated optimization (in a \textit{controller}) and finally modify the data-plane behavior accordingly (through a \textit{dissemination protocol}).
+%CDNs can benefit from such control plane in three aspects: resource is coordinated globally, efficient reconfiguration after failure and simplified optimization for application-level goals without low-level constrains (e.g., topology).
+
+However, enabling centralized control is very challenging with the scale of today's CDNs.
+We identify three key challenges the system must deal with effectively:
+\begin{packeditemize}
+\item Real-time reaction under long controller-to-server delay. The
+global-wide distribution of CDN servers means it is both challenging to
+collect fresh and complete network-wide information at the controller
+and for controller's decision to be received and completely
+applied by data plane in a real-time manner. 
+\item Multi-controller consistency under long controller-to-controller delay. To be robust to network partitions and avoid creating a single point of failure, the
+controller should be replicated in a distributed fashion.
+However, replication introduces the possibility that each
+controller replica may have different views of the network
+state and thus make different decisions.
+Moreover, it is challenging to build consistency among these
+geo-distributed controllers using traditional consensus
+protocols (e.g., Paxos)
+\item Controller scalability: The centralized controller and the
+communication between controllers and nodes must be scalable
+with respect to the number of servers and the contents it
+manages.
+%\item Long propagation latency: It is extremely challenging to guarantee freshness, correctness, and completeness of the network-wide information at the centralized controller.  Likewise, it is challenging for controller decision to bereceived and completely applied by data plane in a real-time manner.
+%\item Decision made by the centralized entities must be activated by distributed nodes in a distributed, but consistent fashion.
+%\item The centralized controller must be scalable with respect to the number of servers and video streams it manages.
+%\item The controller must be fault-tolerant and robust with respect to failures.
+\end{packeditemize}
+
+This paper presents {\it \SDCDN}, the first system design and
+implementation of a software-defined CDN that unleashes the
+potential benefits of a centralized control by addressing these
+challenges. To demonstrate its benefit, this paper focuses on
+supporting live video streaming in content delivery networks as
+the key application.
+This paper focuses on distribution of live video from source
+nodes to CDN's edge servers that serve the video to clients.
+However, directing clients to appropriate edge servers is
+considered out-of-scope.
+%Specifically, we show that our CDN controller can enhance the overall quality of live video streams.
+%and control the cost by enabling various optimizations.
+
+The key enabler of \SDCDN to address these challenges is the unique flexibility of CDN's data plane. First, CDN's data plane is controlled by software, so it can be updated frequently and with low cost. Second CDN's data plane relies on application level protocols (e.g., HTTP) which already provide functions such as loop-detection, load balance and etc. 
+%SDCDN leverages the fact that overlay networks often consist of
+%machines with non-trivial computational capacity, as key enabler
+%to address the long-propagation-delay problem and controller inconsistency
+%issues. 
+As a result, instead of implementing a fully distributed control
+protocol or pushing all control functionalities to a centralized controller, \SDCDN adopts a {\it partial centralization} approach and
+resides both in the centralized controller, and in distributed servers. To achieve real-time reaction under long propagation delay, the controller computes a globally coordinated decision in a coarse time scale and each server monitors connectivity locally in a finer time scale and uses global decision based on local measurement to react against network state changes in real-time. To address multi-controller inconsistency, we let each server receive different decisions made by multiple controllers and resolve the inconsistency locally, avoiding time-consuming concensus protocols between geo-distributed controllers. 
+Finally, we implement the controller in cloud and show that the centralized control logic is able to scale to \fillme streams for a CDN of \fillme nodes within \fillme minute, and improve the Live streaming quality for \fillme times.
+
+This paper makes the following contributions:
+\begin{packeditemize}
+	\item 
+\end{packeditemize}
+
+Paper organization: 
+
+\begin{comment}
+This paper makes the following contributions:
+\begin{itemize}
+\item Performance and cost-effectiveness: We present a system
+that enables a joint optimization with a network-wide view in
+Internet content distribution.
+Our decision plane utilizes a novel algorithm for content
+distribution that outperforms distributed algorithms while
+minimizing the cost.
+\item Scalability: Our system scales to a large number of nodes
+($\sim$ 10,000) and live channels even under a high churn rate.
+\item Fault-tolerance: The system provides fault-tolerance of
+the DE with multiple DEs, and effectively addresses consistency
+issues.
+\end{comment}

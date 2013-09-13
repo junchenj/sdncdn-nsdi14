@@ -24,9 +24,46 @@
 \usepackage{usenix,epsfig,endnotes}
 \usepackage{color}
 \usepackage{colortbl}
+\usepackage{verbatim}
+\usepackage[font=bf]{caption}
+\usepackage{xspace}
 
+
+\newcommand{\tightcaption}[1]{\vspace{-0.2cm}\caption{\em #1}\vspace{-0.2cm}}
+\newcommand{\tightsection}[1]{\vspace{-0.15in}\section{#1}\vspace{-0.2cm}}
+\newcommand{\tightsubsection}[1]{\vspace{-0.15in}\subsection{#1}\vspace{-0.2cm}}
+\newcommand{\tightsubsubsection}[1]{\vspace{-0.15in}\subsubsection{#1}\vspace{-0.2cm}}
+
+\newcommand{\eg}{{\it e.g.,}\xspace}
+\newcommand{\ie}{{\it i.e.,}\xspace}
+
+\newcounter{note}[section]
+\renewcommand{\thenote}{\thesection.\arabic{note}}
+
+\newcommand{\Section}{\S}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\newcommand{\fillme}{{\bf XXX}~}
+
+
+\newcommand{\mypara}[1]{\medskip\noindent{\bf {#1}:}~}
+\newcommand{\myparatight}[1]{\smallskip\noindent{\bf {#1}:}~}
+\newcommand{\myparaq}[1]{\smallskip\noindent{\bf {#1}?}~}
+
+\newcommand{\myparaittight}[1]{\smallskip\noindent{\emph {#1}:}~}
+\newcommand{\question}[1]{\smallskip\noindent{\emph{Q:~#1}}\smallskip}
+\newcommand{\myparaqtight}[1]{\smallskip\noindent{\bf {#1}}~}
 \newcommand{\jc}[1]{{\footnotesize\color{red}[JC: #1]}}
 
+
+\newenvironment{packedenumerate}{\begin{list}{\thepackednmbr.}{\usecounter{packednmbr}\setlength{\itemsep}{0.5pt}\addtolength{\labelwidth}{-4pt}\setlength{\leftmargin}{\labelwidth}\setlength{\listparindent}{\parindent}\setlength{\parsep}{1pt}\setlength{\topsep}{0pt}}}{\end{list}}
+
+\newenvironment{packeditemize}{\begin{list}{$\bullet$}{\setlength{\itemsep}{0.5pt}\addtolength{\labelwidth}{-4pt}\setlength{\leftmargin}{\labelwidth}\setlength{\listparindent}{\parindent}\setlength{\parsep}{1pt}\setlength{\topsep}{0pt}}}{\end{list}}
+
+\input{macros}
 
 \begin{document}
 
@@ -34,7 +71,7 @@
 \date{}
 
 %make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{SDCDN: A Control Plane for Content Delivery Networks}
+\title{Design and Implementation of a Software-defined Content Delivery Networks}
 
 %for single author (just remove % characters)
 \author{
@@ -57,10 +94,11 @@ Second Institution
 
 
 \subsection*{Abstract}
-Content delivery networks (CDN) and overlay networks count for most of today's Internet traffic and have large impact on performance of applications (e.g., video streaming and web) that rely on them. 
-Traditionally, these networks are based on distributed, rather than centralized protocols, which works more resilient and responsive in large geo-distribuetd networks. However, the trend of growing traffic volume and demands for high quality experience and that of global control planes for application call for a logically centralized architecture of CDNs and overlay networks at large where servers are coordinated in a global scale. 
+Content delivery networks (CDN) serve a significant fraction of today's Internet traffic and have huge impact on performance of applications (e.g., video streaming and web) that rely on them. 
+State-of-the-art CDNs are based on distributed protocols, which have been proved resilient in large geo-distribuetd networks. However, as CDNs expand its scale to meet the trends of growing traffic volume and demands for higher quality experience, the operational and management complexity raises and, as a result, it becomes challenging to fully utilize the capacities of CDN infrastructure effectively.
 
-To address this, we presents software-defined CDN (SDCDN), a logically centralized architecture for CDNs and, in particular, Live streaming. It is similar in spirit to software-defined networks (SDN), but differs in several key aspects. As a design choice, we argue that neithor fully centralization (i.e, SDN) nor fully decentralization (i.e., current CDN) is most desirable for CDN control plane. Instead, a careful division of functionalities between distributed servers and centralized controllers is needed to achieve both performance benefits of global coordination and faster recovery from failures. 
+To address this, we presents the design and implementation of \SDCDN, the first logically centralized architecture for CDNs where a controller can perform global optimization for the distributed servers based on a network-wide view of network states and demands. We demonstrate that \SDCDN can achieve much better utilization of server capacities, simplify the management, but also mitigate the fault-tolerance, inconsistency and scalability issues brought by the centralized architecture.
+While it is similar in spirit to the software-defined networks (SDN), our appraoch also differs in several key aspects. We argue that the scale of wide-area deployments and flexible data plane means neithor fully centralization (i.e, SDN) nor fully decentralization (i.e., current CDN) is  desirable for an \SDCDN. Instead, a careful division of functionalities between centralized controllers and distributed nodes is required to achieve both performance benefits of global coordination and faster recovery from failures. Our evaluation shows that \fillme 
 
 \input{intro}
 
